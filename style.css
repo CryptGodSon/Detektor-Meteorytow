@@ -1,0 +1,694 @@
+@import url('https://fonts.cdnfonts.com/css/d-din');
+
+/* Reset and Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'D-DIN', sans-serif;
+    text-transform: uppercase;
+    color: white;
+}
+
+:root {
+    --bg-black: #000;
+    --section-bg: #050505;
+    --mars-red: #ffffff; /* Zmieniono z czerwonego na biały wg prośby */
+    --telemetry-grey: #888;
+    --border-color: #222;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-black);
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    letter-spacing: 1px;
+}
+
+p, td {
+    text-transform: none; /* readibility */
+    line-height: 1.6;
+}
+
+/* Header */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 25px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                background 0.4s ease, border-bottom 0.4s ease,
+                padding 0.4s ease;
+}
+
+.navbar.nav-hidden {
+    transform: translateY(-100%);
+}
+
+.navbar.nav-scrolled {
+    background-color: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(10px);
+    padding: 15px 50px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    position: relative;
+    color: white;
+}
+
+/* SpaceX underline hover */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -5px;
+    left: 0;
+    background-color: white;
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.menu-toggle { display: none; }
+
+/* Hero Section */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 10%;
+    z-index: 1;
+    background-color: #050505;
+}
+
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    opacity: 0.6; /* Wymuszenie wiekszego czarnego tła */
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 60%), radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    text-align: left;
+    max-width: 700px;
+    z-index: 10;
+    animation: fadeIn 2s ease-out forwards;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+}
+
+.hero-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    font-weight: normal;
+    color: #ccc;
+    letter-spacing: 2px;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+    line-height: 1.1;
+}
+
+/* SpaceX style Button */
+.btn {
+    display: inline-block;
+    padding: 15px 40px;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.4s ease;
+    z-index: 1;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: -1;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.btn:hover {
+    color: black;
+}
+
+.btn:hover::before {
+    transform: translateY(0);
+}
+
+/* Scroll indicator */
+.scroll-down {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    animation: bounce 2s infinite;
+    z-index: 10;
+}
+
+.scroll-down span { display: block; margin-bottom: 5px; color:#aaa; font-size:0.6rem; font-weight:bold; }
+
+.chevron {
+    width: 16px;
+    height: 16px;
+    border-right: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(45deg);
+    margin: 0 auto;
+}
+
+/* Content Sections */
+.content-section {
+    padding: 100px 50px;
+    background-color: var(--bg-black);
+}
+
+.pt-0 { padding-top: 0; }
+
+.content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.section-heading {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.text-left { text-align: left; }
+
+/* Mission Control Map Filters */
+
+.pulse-marker {
+    background: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+}
+
+.pulse-marker-latest {
+    background: #ff3b3b;
+    border: 1px solid rgba(255, 59, 59, 0.5);
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255, 59, 59, 0.9);
+    cursor: pointer;
+}
+
+.pulse {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    animation: pulse-anim 1.5s infinite alternate;
+}
+
+.pulse.status-green {
+    background: #00ff00 !important;
+    box-shadow: 0 0 10px #00ff00 !important;
+}
+
+.pulse.status-orange {
+    background: #ffa500 !important;
+    box-shadow: 0 0 10px #ffa500 !important;
+}
+
+.pulse.status-red {
+    background: #ff3b3b !important;
+    box-shadow: 0 0 10px #ff3b3b !important;
+}
+
+@keyframes pulse-anim {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(1.5); opacity: 0.5; }
+}
+
+/* Przyciski Zoom (+ / -) na mapie */
+.leaflet-bar a, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+    color: #fff !important;               /* Biały znak + i - */
+    background-color: #050505 !important; /* Czarne tło przycisku */
+    border: 1px solid #333 !important;    /* Ciemnoszara ramka */
+    font-weight: bold !important;
+}
+.leaflet-bar a:hover {
+    background-color: #222 !important;    /* Delikatnie jaśniejsze tło na hover */
+    color: #fff !important;
+}
+.leaflet-bar {
+    border: none !important;              /* Usunięcie grubej oryginalnej szarej ramki zewnętrznej Leaflet */
+}
+
+/* Tooltip Informacyjny (i) */
+.infotip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    margin-left: 15px;
+    color: #666;
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-family: sans-serif;
+    transition: color 0.3s;
+}
+
+.infotip:hover {
+    color: #fff;
+}
+
+.infotip .infotiptext {
+    visibility: hidden;
+    width: 320px;
+    background-color: #111;
+    color: #bbb;
+    text-align: left;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #333;
+    position: absolute;
+    z-index: 9999;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -160px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    text-transform: none; /* Rozwijany tekst musi być wygodny w czytaniu (nie same duże litery) */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    font-family: 'D-DIN', sans-serif;
+}
+
+.infotip:hover .infotiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.infotiptext strong {
+    color: #fff;
+    font-weight: 800;
+}
+
+/* Tables */
+.table-wrapper {
+    background: var(--section-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 24px;
+    text-align: left;
+    border-bottom: 1px solid #111;
+}
+
+th {
+    font-size: 0.75rem;
+    color: var(--telemetry-grey);
+    background: #080808;
+    letter-spacing: 2px;
+}
+
+td { font-size: 0.9rem; color: #ddd; }
+tr:hover { background: #0c0c0c; }
+tr { cursor: pointer; transition: background 0.3s ease; }
+
+.status-badge {
+    font-size: 0.65rem;
+    border: 1px solid var(--mars-red);
+    padding: 4px 8px;
+    color: var(--mars-red);
+    border-radius: 4px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.scanning { color: var(--mars-red); animation: scan-blink 1s infinite; letter-spacing: 2px;}
+@keyframes scan-blink { 50% { opacity: 0; } }
+
+/* Modals */
+#modal-overlay.hidden, #consent-module.hidden { display: none !important; }
+
+#modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.95);
+    z-index: 10000;
+    display: flex; justify-content: center; align-items: center;
+    backdrop-filter: blur(15px);
+}
+
+.glassmorphism {
+    background: #0a0a0a;
+    border: 1px solid var(--border-color);
+    padding: 50px;
+    max-width: 750px;
+    width: 90%;
+    position: relative;
+    border-radius: 8px;
+}
+
+#close-modal {
+    position: absolute; top: 25px; right: 25px;
+    background: none; border: none; color: #fff; font-size: 2.5rem; cursor: pointer;
+    transition: color 0.3s;
+    line-height: 1;
+}
+
+#close-modal:hover { color: #888; }
+
+#consent-module {
+    position: fixed; 
+    bottom: 30px; 
+    right: 30px; 
+    width: 350px;
+    background: rgba(10, 10, 10, 0.95); 
+    border: 1px solid rgba(255, 59, 59, 0.5);
+    border-radius: 8px;
+    padding: 25px; 
+    z-index: 5000;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    transform: translateX(150%);
+    animation: push-slide-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.5s;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes push-slide-in {
+    to { transform: translateX(0); }
+}
+
+#consent-module p { 
+    font-size: 0.85rem; 
+    letter-spacing: 0.5px; 
+    color: #bbb; 
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* Footer */
+.site-footer {
+    background-color: var(--section-bg);
+    border-top: 1px solid var(--border-color);
+    padding: 60px 10%;
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #fff;
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: bold;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+/* Animations Keyframes missing */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+    40% { transform: translate(-50%, -10px); }
+}
+
+/* ENCYKLOPEDIA / METEORYTY - STYL TABS */
+.article-container {
+    max-width: 900px;
+    margin: 120px auto 100px auto;
+    padding: 50px 60px;
+    background: #0a0a0a;
+    border: 1px solid #1c1c1c;
+    border-radius: 8px;
+    color: #bbb;
+    line-height: 1.8;
+    font-family: sans-serif;
+    box-shadow: 0 0 40px rgba(0,0,0,0.9);
+}
+.article-container h1 {
+    color: #fff;
+    font-size: 2.8rem;
+    margin-bottom: 5px;
+    font-family: 'D-DIN', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    line-height: 1.1;
+}
+.article-container h2 {
+    color: #fff;
+    font-size: 1.6rem;
+    margin-top: 50px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-family: 'D-DIN', sans-serif;
+    letter-spacing: 1px;
+}
+.article-container p {
+    margin-bottom: 25px;
+    font-size: 1.05rem;
+    font-weight: 300;
+}
+.article-container strong {
+    color: #fff;
+    font-weight: bold;
+}
+
+.monte-promo {
+    margin-top: 60px;
+    padding: 40px;
+    border: 1px solid rgba(255, 59, 59, 0.4);
+    background: rgba(255, 59, 59, 0.03);
+    border-radius: 8px;
+    text-align: center;
+}
+.monte-promo h3 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-family: 'D-DIN', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+}
+.monte-promo p {
+    color: #a0a0a0;
+    text-align: left;
+    font-size: 1rem;
+    line-height: 1.7;
+    column-count: 1;
+}
+.btn-mars {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 16px 35px;
+    background: transparent;
+    color: #ff3b3b;
+    border: 2px solid #ff3b3b;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+    font-family: 'D-DIN', sans-serif;
+    font-size: 1.1rem;
+}
+.btn-mars:hover {
+    background: #ff3b3b;
+    color: #000;
+    box-shadow: 0 0 20px rgba(255, 59, 59, 0.4);
+}
+
+@media (min-width: 768px) {
+    .monte-promo p {
+        column-count: 2;
+        column-gap: 40px;
+    }
+}
+
+.modal-grid {
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 30px; 
+    font-size: 0.8rem;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN (MOBILE & TABLETS)
+========================================= */
+@media (max-width: 768px) {
+    /* Navbar i Nagłówki */
+    .navbar {
+        flex-direction: column;
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .hero h1 {
+        font-size: 2.8rem;
+    }
+    
+    .hero p {
+        font-size: 0.9rem;
+    }
+
+    .section-heading {
+        font-size: 1.5rem;
+    }
+
+    /* Gridy Modyfikacje - zwijanie kafelków */
+    .modal-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .encyclopedia-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Layout Encyklopedii */
+    .article-container {
+        padding: 30px 20px;
+        margin: 100px auto 30px auto;
+        border: none;
+        border-radius: 0;
+    }
+    
+    .article-container h1 {
+        font-size: 2rem;
+    }
+
+    /* Tabela scrollowana w poziomie */
+    .table-wrapper {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    /* Skalowanie okienek wyskakujących */
+    .glassmorphism {
+        padding: 30px 20px;
+    }
+    
+    #close-modal {
+        top: 10px;
+        right: 15px;
+    }
+    
+    /* Stopka */
+    .footer-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .footer-copyright {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+}
+

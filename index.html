@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Polskie SEO i Opisy -->
+    <title>Detektor Meteorytów NA ŻYWO – Gdzie w powłokę uderzył meteor? [RADAR OSTRZEGAWCZY]</title>
+    <meta name="description"
+        content="Szokujące dane CNEOS online! Prawdziwy satelitarny radar 100 ostatnich potężnych uderzeń meteorów o niesamowitej energii w Ziemię. Zobacz ostrzeżenia NASA na własne oczy i włącz darmowy lokalizator live!">
+    <meta name="keywords"
+        content="Meteoryty, spadające gwiazdy, asteroidy, uderzenie asteroidy, radar astronomiczny, zagrożenie kosmiczne, nasa api, śledzenie uderzeń, bolidy, meteory">
+    <link rel="icon" type="image/png" href="favicon/meteor.png">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Nawigacja -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="#">
+                <img src="logoicon/logo.png" alt="Logo Detektor"
+                    style="height: 34px; width: auto; vertical-align: middle;">
+            </a>
+        </div>
+        <nav class="nav-links">
+            <a href="#tracker">GLOB</a>
+            <a href="#feed">TELEMETRIA</a>
+            <a href="meteoryty.html">METEORYTY</a>
+        </nav>
+        <div class="menu-toggle">&#9776;</div>
+    </header>
+
+    <!-- Sekcja Hero -->
+    <section id="hero" class="hero micro-gravity">
+        <!-- Opcjonalnie: background video -->
+        <video autoplay loop muted playsinline class="background-video">
+            <source src="video/pagevideo.mp4" type="video/mp4">
+            Twoja przeglądarka nie obsługuje wideo.
+        </video>
+        <div class="video-overlay"></div>
+
+        <div class="hero-content">
+            <h1 class="hero-title">DETEKTOR METEORYTÓW</h1>
+            <p class="hero-description">MONITOROWANIE ZAGROŻEŃ KOSMICZNYCH (NEO) | TELEMETRIA NA ŻYWO Z SIECI
+                SATELITARNEJ NASA.</p>
+        </div>
+
+        <div class="scroll-down">
+            <span>TELEMETRIA PONIŻEJ</span>
+            <div class="chevron"></div>
+        </div>
+    </section>
+
+    <!-- Moduł 1: Główna Mapa -->
+    <section id="tracker" class="content-section">
+        <div class="content-container">
+            <div
+                style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 class="section-heading text-left" style="margin-bottom:0;">
+                    GLOBALNE ŚLEDZENIE ZAGROŻEŃ
+                    <span class="infotip">ⓘ
+                        <span class="infotiptext">
+                            <strong>JAK DZIAŁA SYSTEM?</strong><br><br>
+                            Aplikacja działa całkowicie samoistnie, uaktualniając najczęstsze raporty prosto z CNEOS (NASA). Czas pokazywany to Twój lokalny czas, więc nie musisz przeliczać stref z USA!<br><br>
+                            • <strong>Kropki na mapie:</strong> Każda z nich to prawdziwy ślad meteoroidu.<br>
+                            • <strong>Czerwony kolor:</strong> Odznacza absolutnie najświeższe uderzenie wyłapane przez nasłuch.<br>
+                            • <strong>Szczegóły:</strong> Kliknij kropkę (zawsze wcelujesz) lub wiersz w tabeli, by poznać koordynaty, prędkość i udar w Kilotonach.<br>
+                            • System sam się aktualizuje, ale jak poczujesz potrzebę, narzuć to ręcznie przyciskiem skanowania w celu sprawdzenia!
+                        </span>
+                    </span>
+                    <br><span style="font-size: 0.8rem; letter-spacing: 1px; color:#fff; font-weight:bold;"><span
+                            id="connection-status-dot" class="pulse"></span> <span id="connection-status-text">AKTYWNE ŁĄCZE SATELITARNE</span></span>
+                </h2>
+                <button id="scan-btn" class="btn" style="margin: 0;">SKANUJ ORBITĘ / ODŚWIEŻ</button>
+            </div>
+            <div id="map-container" style="height: 600px; border: 1px solid #222; border-radius:8px; overflow:hidden;">
+                <div id="map" style="height:100%; width:100%;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Moduł 2: Tabela -->
+    <section id="feed" class="content-section pt-0">
+        <div class="content-container">
+            <h2 class="section-heading text-left">STRUMIEŃ DANYCH</h2>
+            <div class="table-wrapper">
+                <table id="telemetry-table">
+                    <thead>
+                        <tr>
+                            <th>[CZAS_ORBITALNY]</th>
+                            <th>[WSPÓŁRZĘDNE]</th>
+                            <th>[MASA_I_ROZMIAR]</th>
+                            <th>[PRĘDKOŚĆ]</th>
+                            <th>[SIŁA_UDERZENIA]</th>
+                            <th>[STATUS]</th>
+                        </tr>
+                    </thead>
+                    <tbody id="telemetry-body">
+                        <!-- Dane wstrzykiwane przez JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Push Cookie Notification -->
+    <div id="consent-module" class="hidden">
+        <div class="consent-content">
+            <h4 style="margin-top:0; margin-bottom: 10px; color:#ff3b3b; font-family:'D-DIN', sans-serif; letter-spacing:1px; font-size:1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px;">KOMUNIKAT SYSTEMOWY</h4>
+            <p>Wymagana autoryzacja sprzętowych plików Cookie w celu zestawienia strumienia telemetrii na Twojej maszynie (Local Storage).</p>
+            <button id="confirm-link-btn" class="btn" style="padding: 10px 15px; font-size:0.85rem; margin:0; width:100%;">ZEZWÓL NA TRANSFER</button>
+        </div>
+    </div>
+
+    <!-- Modale -->
+    <div id="modal-overlay" class="hidden">
+        <div id="telemetry-modal" class="glassmorphism">
+            <button id="close-modal" style="font-family:'D-DIN', sans-serif;">&times;</button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-logo">MONTE | DETEKTOR</div>
+            <div class="footer-links">
+                <a href="#hero">Skaner</a>
+                <a href="#tracker">Glob</a>
+                <!-- Link do strony glownej jak prosil uzytkownik -->
+                <a href="https://cryptgodson.github.io/MonteMARS/" target="_blank">GŁÓWNY PROGRAM KOLONIZACJI MONTE</a>
+            </div>
+            <div class="footer-copyright" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: 15px; margin-top:20px;">
+                <span>&copy; 2026 MONTE. Czyniąc ludzkość gatunkiem wieloplanetarnym. Zasilane CNEOS.</span>
+                <a href="https://github.com/CryptGodSon" target="_blank" style="color:#666; text-decoration:none; border: 1px solid #333; padding: 6px 15px; border-radius: 4px; transition: 0.3s; font-family:'D-DIN', sans-serif; letter-spacing: 1px; font-size: 0.8rem;" onmouseover="this.style.color='#fff'; this.style.borderColor='#fff'" onmouseout="this.style.color='#666'; this.style.borderColor='#333'">ENGINEERED BY CRYPTGODSON</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- App Logic -->
+    <script src="app.js"></script>
+</body>
+
+</html>

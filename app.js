@@ -1,7 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- KONFIGURACJA ---
-    // Ponieważ NASA JPL API nie wspiera natywnego CORS z Live Server, przesyłany żądanie bezpiecznym proxy.
-    const API_URL = 'https://api.codetabs.com/v1/proxy?quest=https://ssd-api.jpl.nasa.gov/fireball.api?limit=100';
+    // NASA JPL API nie wysyła nagłówków CORS, więc żądanie z przeglądarki musi przejść przez proxy.
+    const NASA_API = 'https://ssd-api.jpl.nasa.gov/fireball.api?limit=100';
+    // Lista proxy CORS z fallbackiem - jeśli pierwsze jest niedostępne, próbujemy kolejne.
+    const PROXIES = [
+        url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+        url => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`
+    ];
+
+    // Pobiera dane przez kolejne proxy, dopóki któreś nie zwróci poprawnego JSON-a NASA.
+    async function fetchViaProxy(targetUrl) {
+        let lastError;
+        for (const buildUrl of PROXIES) {
+            try {
+                const response = await fetch(buildUrl(targetUrl));
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const data = await response.json();
+                // Walidacja - odrzucamy strony-zaślepki proxy, które nie są danymi NASA.
+                if (data && Array.isArray(data.fields) && Array.isArray(data.data)) {
+                    return data;
+                }
+                throw new Error('Niepoprawny format danych z proxy');
+            } catch (err) {
+                lastError = err;
+                console.warn('Proxy nieudane, próbuję następne:', err.message);
+            }
+        }
+        throw lastError || new Error('Wszystkie proxy niedostępne');
+    }
     const TILE_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
     const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
@@ -102,11 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showScanningState(true);
         updateConnectionStatus('fetching');
         try {
-            const response = await fetch(API_URL);
-            if (!response.ok) throw new Error('API NASA niedostępne');
-            
-            const data = await response.json();
-            
+            const data = await fetchViaProxy(NASA_API);
+
             // Logika wykrywania nowego uderzenia
             if (data.data && data.data.length > 0) {
                 const latestDate = data.data[0][0]; // Pierwsza kolumna to "date"

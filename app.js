@@ -34,13 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let lastLatestDate = null; // Przechowuje datę najnowszego uderzenia
     let isInitialLoad = true;
+    let audioCtx = null; // Jeden współdzielony kontekst audio (przeglądarki limitują ich liczbę)
 
     // --- GENERATOR DŹWIĘKU RADAROWEGO ---
     function playRadarBeep() {
         try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return;
-            const ctx = new AudioContext();
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            if (!audioCtx) audioCtx = new AudioCtx();
+            // Po interakcji użytkownika wznawiamy kontekst (polityka autoplay przeglądarek)
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const ctx = audioCtx;
             const osc = ctx.createOscillator();
             const gainNode = ctx.createGain();
             
@@ -204,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // M = 2E / v^2 (z E = 1/2 m v^2)
                 const massKg = (2 * energyJoules) / (velocityMs * velocityMs);
                 const massTonnes = massKg / 1000;
-                calcMassStr = massTonnes > 1000 ? (massTonnes/1000).toFixed(2) + ' tyś. TAN' : massTonnes.toFixed(2) + ' TON';
+                calcMassStr = massTonnes > 1000 ? (massTonnes/1000).toFixed(2) + ' tyś. TON' : massTonnes.toFixed(2) + ' TON';
                 
                 // Obliczanie średnicy zakładając gęstość chondrytu zwyczajnego ~3000 kg/m^3
                 const volume = massKg / 3000;
@@ -314,8 +318,17 @@ document.addEventListener('DOMContentLoaded', () => {
         modalOverlay.classList.remove('hidden');
     }
 
+    const modalOverlay = document.getElementById('modal-overlay');
     document.getElementById('close-modal').addEventListener('click', () => {
-        document.getElementById('modal-overlay').classList.add('hidden');
+        modalOverlay.classList.add('hidden');
+    });
+    // Zamknięcie modala kliknięciem w tło...
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) modalOverlay.classList.add('hidden');
+    });
+    // ...lub klawiszem Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') modalOverlay.classList.add('hidden');
     });
 
     scanBtn.addEventListener('click', () => {

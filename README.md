@@ -1,33 +1,35 @@
-# 🛰️ Detektor Meteorytów | Earth Orbital Defense
+# 🛰️ Meteor Detector | Earth Orbital Defense
 
-**Interaktywny detektor zagrożeń kosmicznych (NEO) zasilany telemetrią live z serwerów CNEOS/NASA. Śledź uderzenia potężnych bolidów w Ziemską atmosferę w czasie rzeczywistym. Moduł wczesnego ostrzegania powiązany z głównym wieloplanetarnym programem kolonizacji – MonteMARS.**
+**An interactive cosmic-threat (NEO) detector powered by live telemetry from CNEOS/NASA servers. Track the impacts of powerful bolides entering Earth's atmosphere in real time. An early-warning module linked to the main multiplanetary colonization program – MonteMARS.**
 
 ---
 
-## 📸 Główne Funkcje (System Features)
-* **Pobieranie Danych Online:** Odpytywanie przez proxy bezpośrednio amerykańskich baz militarnych [CNEOS NASA](https://cneos.jpl.nasa.gov/).
-* **Skanowanie Czasu Rzeczywistego:** Aktywny radar "Ping" sygnałujący wykrycie nowego zagrożenia po odświeżeniu pakietu danych.
-* **Analiza Fizyczna Obiektów:** Zaawansowana parametryzacja wstrzykująca dane o wybuchu w Kilotonach i konwertująca je przy użyciu wzorów na szacunkową _Masę_ (T) oraz _Wielkość_ (D) obiektu balistycznego.
-* **Mapa Geofizyczna (Glob):** Interaktywna technologia Leaflet operująca koordynatami uderzenia dla w pełni darmowego dostępu (open-source OpenStreetMap z nałożonym filtrem Sci-Fi szumu/dark mode).
-* **Konwersja Czasu Słonecznego:** Natychmiastowe tłumaczenie bazowego Czasu Centralnego na Prawdziwy Lokalny Czas Epicentrum, korzystając z surowej długości geograficznej uderzenia.
-* **Encyklopedia Bolidów:** Potężny, wielomodułowy zbiór tekstów dydaktycznych o zdarzeniach takich jak Tunguska z bezpośrednim łączem do stacji bazowej **MonteMARS**.
+## 📸 System Features
+* **Online Data Fetching:** Queries the U.S. [CNEOS NASA](https://cneos.jpl.nasa.gov/) databases directly through a CORS proxy (with automatic fallback across several proxies for resilience).
+* **Real-Time Scanning:** An active radar "Ping" signals the detection of a new threat whenever a fresh data packet arrives.
+* **Physical Object Analysis:** Advanced parametrization that takes the blast energy in Kilotons and converts it, using physics formulas, into the estimated _Mass_ (T) and _Size_ (D) of the ballistic object.
+* **Geophysical Map (Globe):** Interactive Leaflet technology operating on impact coordinates, fully free to use (open-source OpenStreetMap with a Sci-Fi noise / dark-mode filter).
+* **Solar Time Conversion:** Instantly translates the base time into the true local time at the epicenter, using the raw longitude of the impact.
+* **Bolide Encyclopedia:** A powerful, multi-module collection of educational texts about events such as Tunguska, with a direct link to the **MonteMARS** base station.
+* **Bilingual Interface (PL/EN):** A language switch in the navigation bar; the choice is saved in `localStorage` and applied across both pages instantly, without reloading.
 
-## 🛠️ Architektura
-Projekt jest wykonany w technologii Czystego Front-Endu ("Vanilla" JS). 
-Brak konieczności instalowania Node.js lub bundlerów – zaprojektowany perfekcyjnie pod natychmiastowe wdrożenie jako projekt statyczny.
-* `index.html` - Stacja radarowa z wbudowaną zgodą cookies sprzętowych.
-* `meteoryty.html` - Hub informacyjno-edukacyjny.
-* `style.css` - W pełni skalowalne (Responsywne dla iOS/Android) arkusze Dark Mode.
-* `app.js` - Przeliczniki danych silnika balistycznego oraz pętle cykliczne `fetch()`.
+## 🛠️ Architecture
+The project is built with pure front-end ("Vanilla" JS) technology.
+No need to install Node.js or bundlers – designed perfectly for instant deployment as a static project.
+* `index.html` - Radar station with a built-in hardware-cookie consent.
+* `meteoryty.html` - Information & education hub.
+* `style.css` - Fully scalable (responsive for iOS/Android) Dark Mode stylesheets.
+* `app.js` - Ballistic-engine data converters and cyclic `fetch()` loops.
+* `i18n.js` - PL/EN dictionary and translation engine powering the language switch.
 
-## 🚀 Instalacja & Uruchamianie (Local Live Server)
-1. Klonuj repozytorium do siebie na pulpit maszynowy.
-2. Pobierz darmowe środowisko [VS Code](https://code.visualstudio.com/).
-3. W jego rozszerzeniach włącz `Live Server`.
-4. Kliknij Prawym Przyciskiem Myszki na `index.html` -> i odpal `Open with Live Server`.
-5. Moduł jest załadowany!
+## 🚀 Installation & Running (Local Live Server)
+1. Clone the repository to your local machine.
+2. Download the free [VS Code](https://code.visualstudio.com/) environment.
+3. Enable the `Live Server` extension.
+4. Right-click `index.html` -> and run `Open with Live Server`.
+5. The module is loaded!
 
-## 🌍 O Projekcie i Licencja
+## 🌍 About the Project & License
 Engineered by **[CryptGodSon](https://github.com/CryptGodSon)**. \
-Zasilane infrastrukturą i logiką publiczną NASA JPL. Zaprojektowane również na ramy wdrożeniowe *Github Pages*. \
-Pochodna głównego planu ekspansji na: [MonteMARS](https://cryptgodson.github.io/MonteMARS/).
+Powered by NASA JPL's public infrastructure and logic. Also designed for the *GitHub Pages* deployment framework. \
+A derivative of the main expansion plan at: [MonteMARS](https://cryptgodson.github.io/MonteMARS/).

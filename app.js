@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastLatestDate = null; // Przechowuje datę najnowszego uderzenia
     let isInitialLoad = true;
     let audioCtx = null; // Jeden współdzielony kontekst audio (przeglądarki limitują ich liczbę)
+    let lastData = null;      // Ostatnie dane NASA - do przerenderowania po zmianie języka
+    let lastConnState = 'ok'; // Ostatni stan łącza
+    const t = (key) => (window.i18n ? window.i18n.t(key) : key); // Skrót do tłumaczeń
 
     // --- GENERATOR DŹWIĘKU RADAROWEGO ---
     function playRadarBeep() {
@@ -150,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateConnectionStatus('ok');
         } catch (error) {
             console.error('Błąd pobierania:', error);
-            tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:50px; color:#fff; background:#111;">BŁĄD POŁĄCZENIA - SERWERY NASA NASA/PROXY NIEDOSTĘPNE<br><small style="color:#aaa; font-size:0.75rem;">Spróbuj odświeżyć za chwilę.</small></td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:50px; color:#fff; background:#111;">${t('error_main')}<br><small style="color:#aaa; font-size:0.75rem;">${t('error_sub')}</small></td></tr>`;
             updateConnectionStatus('error');
         } finally {
             showScanningState(false);
@@ -158,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function processData(data) {
+        lastData = data; // zapamiętujemy, by móc przerenderować po zmianie języka
         const fields = data.fields;
         const records = data.data;
 
@@ -182,9 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch(e) {}
             
             // --- FIZYKA: MASA, ŚREDNICA ORAZ CZAS SŁONECZNY EPICENTRUM ---
-            let epicenterTimeStr = 'BRAK';
-            let calcMassStr = 'NIEZNANA';
-            let calcDiameterStr = 'NIEZNANA';
+            let epicenterTimeStr = t('none');
+            let calcMassStr = t('unknown');
+            let calcDiameterStr = t('unknown');
             
             if (entry.lon && entry['lon-dir']) {
                 let lonOffset = Math.round(parseFloat(entry.lon) / 15);
@@ -208,13 +212,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // M = 2E / v^2 (z E = 1/2 m v^2)
                 const massKg = (2 * energyJoules) / (velocityMs * velocityMs);
                 const massTonnes = massKg / 1000;
-                calcMassStr = massTonnes > 1000 ? (massTonnes/1000).toFixed(2) + ' tyś. TON' : massTonnes.toFixed(2) + ' TON';
+                calcMassStr = massTonnes > 1000 ? (massTonnes/1000).toFixed(2) + ' ' + t('unit_thousand_tons') : massTonnes.toFixed(2) + ' ' + t('unit_tons');
                 
                 // Obliczanie średnicy zakładając gęstość chondrytu zwyczajnego ~3000 kg/m^3
                 const volume = massKg / 3000;
                 const radius = Math.cbrt(volume / ((4/3) * Math.PI));
                 const diameter = radius * 2;
-                calcDiameterStr = diameter < 1 ? (diameter*100).toFixed(1) + ' CM' : diameter.toFixed(2) + ' METRÓW';
+                calcDiameterStr = diameter < 1 ? (diameter*100).toFixed(1) + ' ' + t('unit_cm') : diameter.toFixed(2) + ' ' + t('unit_meters');
             }
             
             entry.calcMassInfo = calcMassStr;
@@ -250,11 +254,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             row.innerHTML = `
                 <td><span style="color:${activeColor}">${localDateStr}</span> <br> <small style="color:${isLatest ? '#ff3b3b' : '#555'}">${localTimeStr}</small></td>
-                <td style="color:${isLatest ? '#ccc' : '#888'}">${entry.lat}${entry['lat-dir']} / ${entry.lon}${entry['lon-dir']} <br> <small style="color:#555">CZAS EPIC. ${epicenterTimeStr}</small></td>
+                <td style="color:${isLatest ? '#ccc' : '#888'}">${entry.lat}${entry['lat-dir']} / ${entry.lon}${entry['lon-dir']} <br> <small style="color:#555">${t('epic_time')} ${epicenterTimeStr}</small></td>
                 <td><span style="color:${activeColor}; font-weight:bold;">${calcMassStr}</span> <br> <small style="color:#666">&Oslash; ${calcDiameterStr}</small></td>
                 <td><span style="color:${activeColor}">${entry.vel || '---'} KM/S</span></td>
                 <td style="color:${activeColor}; font-weight:700;">${entry['impact-e'] || '---'} KT</td>
-                <td><span class="status-badge" style="${isLatest ? 'color:#ff3b3b; border-color:#ff3b3b; box-shadow: 0 0 10px rgba(255,59,59,0.3);' : ''}">${isLatest ? 'OSTATNIE UDERZENIE' : 'WYKRYTO'}</span></td>
+                <td><span class="status-badge" style="${isLatest ? 'color:#ff3b3b; border-color:#ff3b3b; box-shadow: 0 0 10px rgba(255,59,59,0.3);' : ''}">${isLatest ? t('badge_latest') : t('badge_detected')}</span></td>
             `;
             row.addEventListener('click', () => showModal(entry));
             tableBody.appendChild(row);
@@ -263,35 +267,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showScanningState(isScanning) {
         if (isScanning) {
-            tableBody.innerHTML = `<tr><td colspan="6" class="scanning" style="text-align:center; padding:50px;">ANALIZOWANIE TELEMETRII ORBITALNEJ...</td></tr>`;
-            scanBtn.innerHTML = 'SKANOWANIE...';
+            tableBody.innerHTML = `<tr><td colspan="6" class="scanning" style="text-align:center; padding:50px;">${t('scanning')}</td></tr>`;
+            scanBtn.innerHTML = t('scanning_btn');
             // Wygaszanie klikniecia
             scanBtn.style.pointerEvents = 'none';
         } else {
-            scanBtn.innerHTML = 'SKANUJ ORBITĘ &rarr;';
+            scanBtn.innerHTML = t('scan_btn') + ' &rarr;';
             scanBtn.style.pointerEvents = 'auto';
         }
     }
 
     function updateConnectionStatus(state) {
+        lastConnState = state; // zapamiętujemy do przerenderowania po zmianie języka
         const statusDot = document.getElementById('connection-status-dot');
         const statusText = document.getElementById('connection-status-text');
-        
+
         if (!statusDot || !statusText) return;
-        
+
         statusDot.classList.remove('status-green', 'status-orange', 'status-red');
-        
+
         if (state === 'fetching') {
             statusDot.classList.add('status-orange');
-            statusText.innerText = 'NAWIĄZYWANIE ŁĄCZA...';
+            statusText.innerText = t('status_fetching');
             statusText.style.color = '#ffa500';
         } else if (state === 'ok') {
             statusDot.classList.add('status-green');
-            statusText.innerText = 'AKTYWNE ŁĄCZE SATELITARNE';
+            statusText.innerText = t('status_active');
             statusText.style.color = '#00ff00';
         } else if (state === 'error') {
             statusDot.classList.add('status-red');
-            statusText.innerText = 'BŁĄD NASŁUCHU CNEOS';
+            statusText.innerText = t('status_error');
             statusText.style.color = '#ff3b3b';
         }
     }
@@ -301,17 +306,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalContent = document.getElementById('modal-content');
         
         modalContent.innerHTML = `
-            <h2 style="margin-bottom:30px; letter-spacing:4px; font-size:2rem; font-family:'D-DIN', sans-serif;">BAZA_DANYCH: ${entry.date}</h2>
+            <h2 style="margin-bottom:30px; letter-spacing:4px; font-size:2rem; font-family:'D-DIN', sans-serif;">${t('modal_db')}: ${entry.date}</h2>
             <div class="modal-grid">
-                <div><span style="color:#666;">KOORDYNATY</span><br><br><span style="font-size:1rem;color:#fff">${entry.lat}${entry['lat-dir']} ${entry.lon}${entry['lon-dir']}</span></div>
-                <div><span style="color:#666;">CZAS LOK. W EPICENTRUM</span><br><br><span style="font-size:1rem;color:#fff">${entry.epicenterTimeInfo}</span></div>
-                <div><span style="color:#666;">SIŁA UDERZENIA</span><br><br><span style="font-size:1rem;color:#fff; font-weight:bold;">${entry['impact-e']} KT</span></div>
-                <div><span style="color:#666;">PRĘDKOŚĆ WEJŚCIA</span><br><br><span style="font-size:1rem;color:#fff">${entry.vel || 'BRAK DANYCH'} KM/S</span></div>
-                <div><span style="color:#666;">SZACU. MASA SZCZĄTKÓW</span><br><br><span style="font-size:1rem;color:#fff">${entry.calcMassInfo}</span></div>
-                <div><span style="color:#666;">SZACU. ŚREDNICA BOLIDU</span><br><br><span style="font-size:1rem;color:#fff">${entry.calcDiameterInfo}</span></div>
+                <div><span style="color:#666;">${t('modal_coords')}</span><br><br><span style="font-size:1rem;color:#fff">${entry.lat}${entry['lat-dir']} ${entry.lon}${entry['lon-dir']}</span></div>
+                <div><span style="color:#666;">${t('modal_epic')}</span><br><br><span style="font-size:1rem;color:#fff">${entry.epicenterTimeInfo}</span></div>
+                <div><span style="color:#666;">${t('modal_impact')}</span><br><br><span style="font-size:1rem;color:#fff; font-weight:bold;">${entry['impact-e']} KT</span></div>
+                <div><span style="color:#666;">${t('modal_velocity')}</span><br><br><span style="font-size:1rem;color:#fff">${entry.vel || t('modal_nodata')} KM/S</span></div>
+                <div><span style="color:#666;">${t('modal_mass')}</span><br><br><span style="font-size:1rem;color:#fff">${entry.calcMassInfo}</span></div>
+                <div><span style="color:#666;">${t('modal_diameter')}</span><br><br><span style="font-size:1rem;color:#fff">${entry.calcDiameterInfo}</span></div>
             </div>
             <div style="margin-top:40px; border-top:1px solid #222; padding-top:20px; color:#444; font-size:0.6rem; letter-spacing:2px;">
-                ZAPYTANIE_CNEOS // POZIOM_OBRONY_ZIEMI_01
+                ${t('modal_footer')}
             </div>
         `;
         
@@ -329,6 +334,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // ...lub klawiszem Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') modalOverlay.classList.add('hidden');
+    });
+
+    // Po zmianie języka przerenderowujemy treść dynamiczną (tabela/modal/statusy)
+    document.addEventListener('i18n:changed', () => {
+        updateConnectionStatus(lastConnState);
+        if (lastData) processData(lastData);
+        if (scanBtn.style.pointerEvents !== 'none') scanBtn.innerHTML = t('scan_btn') + ' &rarr;';
     });
 
     scanBtn.addEventListener('click', () => {
